@@ -27,7 +27,8 @@ public class VentanaSimulador extends JFrame{
 	
 	static int coordenadaX = 0;
 	static int coordenadaY = 0;
-	
+	public int width = 0;
+	public int height = 0;
 	
 	protected static Boolean vidaEstado = false;
 	private JToggleButton mover;
@@ -52,7 +53,6 @@ public class VentanaSimulador extends JFrame{
 		
 		panelSur = new JPanel();
 		panelPrincipal = new JPanel();
-		
 		panelPrincipal.setLayout(null);
 		
 		panelSur.add(mover);
@@ -70,7 +70,7 @@ public class VentanaSimulador extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				
 				mover.setEnabled(false);
-				
+				crear.setSelected(false);
 				
 				Thread hilo = new Thread(new Runnable() {
 					@Override
@@ -126,26 +126,43 @@ public class VentanaSimulador extends JFrame{
 		});
 		
 		
-		this.addMouseListener(new MouseListener() {
+		panelPrincipal.addMouseListener(new MouseListener() {
 			
 
 			public void mouseReleased(MouseEvent e) {
+				boolean esNegativo = false;
+				
 				int ancho = e.getX() - coordenadaX;
 				int alto = e.getY() - coordenadaY;
+				
+				if (ancho<0) {
+					esNegativo = true;
+					ancho = Math.abs(ancho);
+				}
+				if (alto<0) {
+					esNegativo = true;
+					alto = Math.abs(alto);
+				}
 				
 				if (coordenadaX != e.getX() && coordenadaY != e.getY()){
 					if (mover.isSelected()) {
 						for (ElementoEcosistema ee : Ecosistema.getMundo().getElementos()) {
-							if (coordenadaX == ee.getX()) {
-								//ee.setPosicion() = ee.getX();
+							if((ee.getPosicion().getX()<= coordenadaX )&&( coordenadaX <= (ee.getPosicion().getX() + ee.getDimension().width )) &&(ee.getPosicion().getY() <= coordenadaY )&&(coordenadaY <= (ee.getPosicion().getY() + ee.getDimension().height))) {
+								
+								ee.setPosicion(new Point(e.getX(),e.getY() ));
+								ee.getPanel().setBounds(e.getX() , e.getY(), ee.getDimension().width, ee.getDimension().height);
+								panelPrincipal.revalidate();
 							}
 						}
 					}
 					
 					if (crear.isSelected()) {
+						if (esNegativo) {
+							coordenadaX = coordenadaX - ancho;
+							coordenadaY = coordenadaY - alto;
+						}
 						
-						
-						if(cb.getSelectedItem() == "Flores") {
+						if(cb.getSelectedItem().equals("Flores")){
 							
 							PlantacionFlores flores = new PlantacionFlores("Flores", new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY), 20);
 							
@@ -159,9 +176,9 @@ public class VentanaSimulador extends JFrame{
 							panelPrincipal.revalidate();
 						}
 						
-						if(cb.getSelectedItem() == "Abejas") {
+						if(cb.getSelectedItem().equals( "Abejas")) {
 							
-							ColoniaAbejas abejas = new ColoniaAbejas(" ", new Dimension(), new Point(), 20);
+							ColoniaAbejas abejas = new ColoniaAbejas(" ", new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY), 20);
 							
 							abejas.getPanel().setPreferredSize(abejas.getDimension());
 							Ecosistema.getMundo().getElementos().add(abejas);
@@ -173,10 +190,10 @@ public class VentanaSimulador extends JFrame{
 							panelPrincipal.revalidate();
 						}
 						
-						if (cb.getSelectedItem() == "Agua"){
+						if (cb.getSelectedItem().equals("Agua")){
 							
 							
-							Agua agua = new Agua(" ", new Dimension(), new Point());
+							Agua agua = new Agua(" ", new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY));
 							
 							agua.getPanel().setPreferredSize(agua.getDimension());
 							Ecosistema.getMundo().getElementos().add(agua);
