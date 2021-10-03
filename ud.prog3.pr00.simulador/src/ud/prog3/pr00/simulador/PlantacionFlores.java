@@ -1,0 +1,72 @@
+package ud.prog3.pr00.simulador;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+public class PlantacionFlores extends ElementoEcosistema implements Evolucionable{
+
+	protected long cantidad;
+	protected JPanel panel;
+
+	public long getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(long cantidad) {
+		this.cantidad = cantidad;
+	}
+
+	public PlantacionFlores(String titulo, Dimension dimension, Point posicion, long cantidad) {
+		super(titulo, dimension, posicion);
+		this.cantidad = (long) Math.sqrt(dimension.getWidth()*dimension.height);
+	}
+
+	public void evoluciona(int dias) {
+		double factorCrecimiento = 0.75;
+		 for (ElementoEcosistema ee : Ecosistema.getMundo().getElementos()) {
+		 int dist = Ecosistema.distancia( this, ee );
+		 if (ee instanceof ColoniaAbejas) { // La cercanía de abejas beneficia
+		 if (dist < 500) factorCrecimiento = factorCrecimiento / dist * 500;
+		 } else if (ee instanceof Agua) { // La cercanía de agua beneficia
+		 if (dist < 500) factorCrecimiento = factorCrecimiento / dist * 500;
+		 }
+		 }
+		 cantidad = (long) (cantidad * factorCrecimiento * dias);
+		 if (cantidad > 5000) cantidad = 5000;
+		
+	}
+
+	public String toString() {
+		return "PlantacionFlores [cantidad=" + cantidad + "]";
+	}
+
+	@Override
+	public JPanel getPanel() {
+		
+		if(this.panel == null) {
+			JLabel uno = new JLabel("Pradera");
+			JLabel dos = new JLabel(Long.toString(this.cantidad));
+			JLabel tres = new JLabel("Flores");
+			
+			JPanel panelFlores = new JPanel();
+			panelFlores.add(uno);
+			panelFlores.add(dos);
+			panelFlores.add(tres);
+			
+			panelFlores.setBackground(Color.GREEN);
+			
+			this.panel = panelFlores;
+			return (panelFlores);
+		}
+		
+		return (this.panel);
+		
+	}
+	
+	
+	
+}
