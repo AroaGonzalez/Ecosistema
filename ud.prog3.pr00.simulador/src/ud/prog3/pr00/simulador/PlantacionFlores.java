@@ -1,16 +1,27 @@
 package ud.prog3.pr00.simulador;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class PlantacionFlores extends ElementoEcosistema implements Evolucionable{
 
-	protected long cantidad;
+	protected long cantidad = (long) Math.sqrt(dimension.getWidth()*dimension.height);;
 	protected JPanel panel;
+	public JLabel dos = new JLabel("",SwingConstants.CENTER);
+	
+	public void editarTexto(String texto) {
+		this.dos.setText(texto);
+	}
+	
+	public JLabel getDos() {
+		return this.dos;
+	}
 
 	public long getCantidad() {
 		return cantidad;
@@ -48,16 +59,16 @@ public class PlantacionFlores extends ElementoEcosistema implements Evolucionabl
 	public JPanel getPanel() {
 		
 		if(this.panel == null) {
-			JLabel uno = new JLabel("Pradera");
-			JLabel dos = new JLabel(Long.toString(this.cantidad));
-			JLabel tres = new JLabel("Flores");
+			JLabel uno = new JLabel(this.getTitulo(),SwingConstants.CENTER);
+			JLabel tres = new JLabel("Flores",SwingConstants.CENTER);
 			
 			JPanel panelFlores = new JPanel();
-			panelFlores.add(uno);
-			panelFlores.add(dos);
-			panelFlores.add(tres);
+			panelFlores.setLayout(new BorderLayout());
+			panelFlores.add(uno, BorderLayout.NORTH);
+			panelFlores.add(tres, BorderLayout.SOUTH);
 			
-			panelFlores.setBackground(Color.GREEN);
+			Color verde = new Color(125,193,111);
+			panelFlores.setBackground(verde);
 			
 			this.panel = panelFlores;
 			return (panelFlores);

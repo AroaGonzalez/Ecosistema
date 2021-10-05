@@ -25,6 +25,8 @@ import ud.prog3.pr00.simulador.PlantacionFlores;
 
 public class VentanaSimulador extends JFrame{
 	
+	public int contadorNumeros = 1;
+	
 	static int coordenadaX = 0;
 	static int coordenadaY = 0;
 	public int width = 0;
@@ -40,7 +42,9 @@ public class VentanaSimulador extends JFrame{
 
 	public VentanaSimulador() {
 		
-		this.setSize(500, 500);
+		this.setTitle("Ecosistema");
+		this.setLocation(400,150);
+		this.setSize(500,500);
 		this.setLayout(new BorderLayout());
 		
 		mover = new JToggleButton("Mover");
@@ -76,31 +80,55 @@ public class VentanaSimulador extends JFrame{
 					@Override
 					public void run() {
 						vivoHilo = true;
+						int contador = 7;
 					
-						while(vivoHilo == true) {
+						while(vivoHilo == true|| contador !=1) {
 							
 							try {
-								
-								Thread.sleep(2500);
-								
+								contador--;
+								for (ElementoEcosistema ee : Ecosistema.getMundo().getElementos()) {
+									if (ee instanceof ColoniaAbejas) {
+										( (ColoniaAbejas) ee).evoluciona(1);
+										((ColoniaAbejas) ee).editarTexto( Integer.toString(((ColoniaAbejas) ee).getPoblacion() ));
+										panelPrincipal.revalidate();
+										
+									}else if (ee instanceof  PlantacionFlores) {
+										( (PlantacionFlores) ee).evoluciona(1);
+										((PlantacionFlores) ee).editarTexto( Long.toString(((PlantacionFlores) ee).getCantidad() ));
+										panelPrincipal.revalidate();
+									}
+								}
+								Thread.sleep(1000);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
-							
+								vivoHilo=true;
 						}
+						vivoHilo = false;
+						vida.setText("Vida");
+						mover.setEnabled(true);
+						crear.setEnabled(true);
 							
 					}				
 				});
 				
-				if(vidaEstado == true) {
-					vidaEstado = false;
-					vida.setText("vida");
+				if(vida.getText()=="Vida") {
 					hilo.start();
+					vida.setText("Parar");
+					mover.setEnabled(false);
+					crear.setEnabled(false);
 				}else {
-					vidaEstado = true;
-					vida.setText("parar");
-					vivoHilo = false;
-				}	
+					vivoHilo = true;
+					vida.setText("Vida");
+					mover.setEnabled(true);
+					crear.setEnabled(true);
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					
+				}
 			}			
 		});
 		
@@ -110,7 +138,14 @@ public class VentanaSimulador extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				crear.setSelected(false);
+				if(crear.isSelected() && mover.isSelected()) {
+					crear.setSelected(false);
+				} else if( !mover.isSelected()) {
+					mover.setSelected(false);
+				}else {
+					crear.setSelected(false);
+					mover.setSelected(true);
+				}
 				
 			}
 		});
@@ -120,8 +155,14 @@ public class VentanaSimulador extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				mover.setSelected(false);
-				
+				if(crear.isSelected() && mover.isSelected()) {
+					mover.setSelected(false);
+				} else if( !crear.isSelected()) {
+					crear.setSelected(false);
+				}else {
+					crear.setSelected(true);
+					mover.setSelected(false);
+				}
 			}
 		});
 		
@@ -156,59 +197,65 @@ public class VentanaSimulador extends JFrame{
 						}
 					}
 					
-					if (crear.isSelected()) {
-						if (esNegativo) {
-							coordenadaX = coordenadaX - ancho;
-							coordenadaY = coordenadaY - alto;
-						}
-						
-						if(cb.getSelectedItem().equals("Flores")){
-							
-							PlantacionFlores flores = new PlantacionFlores("Flores", new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY), 20);
-							
-							flores.getPanel().setPreferredSize(flores.getDimension());
-							Ecosistema.getMundo().getElementos().add(flores);
-							
-							panelPrincipal.add(flores.getPanel());
-							
-							flores.getPanel().setBounds(coordenadaX, coordenadaY, flores.getDimension().width, flores.getDimension().height);
-						
-							panelPrincipal.revalidate();
-						}
-						
-						if(cb.getSelectedItem().equals( "Abejas")) {
-							
-							ColoniaAbejas abejas = new ColoniaAbejas(" ", new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY), 20);
-							
-							abejas.getPanel().setPreferredSize(abejas.getDimension());
-							Ecosistema.getMundo().getElementos().add(abejas);
-							
-							panelPrincipal.add(abejas.getPanel());
-							
-							abejas.getPanel().setBounds(coordenadaX, coordenadaY, abejas.getDimension().width, abejas.getDimension().height);
-							
-							panelPrincipal.revalidate();
-						}
-						
-						if (cb.getSelectedItem().equals("Agua")){
-							
-							
-							Agua agua = new Agua(" ", new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY));
-							
-							agua.getPanel().setPreferredSize(agua.getDimension());
-							Ecosistema.getMundo().getElementos().add(agua);
-							
-							panelPrincipal.add(agua.getPanel());
-							
-							agua.getPanel().setBounds(coordenadaX, coordenadaY, agua.getDimension().width, agua.getDimension().height);
-							System.out.println("f");
-							panelPrincipal.revalidate();
-						}
-
+				if (crear.isSelected()) {
+					if (esNegativo) {
+						coordenadaX = coordenadaX - ancho;
+						coordenadaY = coordenadaY - alto;
 					}
+					
+					if(cb.getSelectedItem().equals("Flores")){
+						
+						PlantacionFlores flores = new PlantacionFlores("Flores "+ contadorNumeros, new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY), 20);
+						contadorNumeros+=1;
+						flores.getPanel().setPreferredSize(flores.getDimension());
+						JPanel panel = flores.getPanel();
+						flores.editarTexto(Long.toString(flores.getCantidad()));
+						panel.add(flores.getDos());
+						panelPrincipal.add(panel);
+						
+						flores.getPanel().setBounds(coordenadaX, coordenadaY, flores.getDimension().width, flores.getDimension().height);
+						Ecosistema.getMundo().getElementos().add(flores);
+						
+						panelPrincipal.revalidate();
+					}
+					
+					if(cb.getSelectedItem().equals( "Abejas")) {
+						
+						ColoniaAbejas abejas = new ColoniaAbejas("Colonia " + contadorNumeros, new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY), 20);
+						
+						abejas.getPanel().setPreferredSize(abejas.getDimension());
+						contadorNumeros+=1;
+						JPanel panel = abejas.getPanel();
+						abejas.editarTexto(Integer.toString(abejas.getPoblacion()));
+						panel.add(abejas.getDos());
+						panelPrincipal.add(panel);
+						
+						abejas.getPanel().setBounds(coordenadaX, coordenadaY, abejas.getDimension().width, abejas.getDimension().height);
+						Ecosistema.getMundo().getElementos().add(abejas);
+						
+						panelPrincipal.revalidate();
+					}
+					
+					if (cb.getSelectedItem().equals("Agua")){
+						
+						
+						Agua agua = new Agua("Lago "+contadorNumeros, new Dimension(ancho, alto), new Point(coordenadaX, coordenadaY));
+						
+						agua.getPanel().setPreferredSize(agua.getDimension());
+						contadorNumeros+=1;
+						Ecosistema.getMundo().getElementos().add(agua);
+						
+						panelPrincipal.add(agua.getPanel());
+						
+						agua.getPanel().setBounds(coordenadaX, coordenadaY, agua.getDimension().width, agua.getDimension().height);
+						
+						panelPrincipal.revalidate();
+					}
+
 				}
-				
 			}
+				
+		}
 			
 			@Override
 			public void mousePressed(MouseEvent e) {

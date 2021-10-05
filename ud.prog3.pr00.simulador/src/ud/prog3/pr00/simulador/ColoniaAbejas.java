@@ -1,16 +1,27 @@
 package ud.prog3.pr00.simulador;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class ColoniaAbejas extends ElementoEcosistema implements Evolucionable{
 	
-	protected int poblacion;
+	protected int poblacion = (int) Math.sqrt(dimension.getWidth()*dimension.height);
 	protected JPanel panel;
+	public JLabel dos = new JLabel("",SwingConstants.CENTER);
+	
+	public void editarTexto(String texto) {
+		this.dos.setText(texto);
+	}
+	public JLabel getDos() {
+		return this.dos;
+	}
+	
 
 	public int getPoblacion() {
 		return poblacion;
@@ -52,19 +63,19 @@ public class ColoniaAbejas extends ElementoEcosistema implements Evolucionable{
 	public JPanel getPanel() {
 		
 		if(this.panel == null) {
-			JLabel uno = new JLabel("Colonia");
-			JLabel dos = new JLabel(Integer.toString(this.poblacion));
-			JLabel tres = new JLabel("Abejas");
+			JLabel uno = new JLabel(this.getTitulo(),SwingConstants.CENTER);
+			JLabel tres = new JLabel("Abejas", SwingConstants.CENTER);
 			
 			JPanel panelAbejas = new JPanel();
-			panelAbejas.add(uno);
-			panelAbejas.add(dos);
-			panelAbejas.add(tres);
+			panelAbejas.setLayout(new BorderLayout());
+			panelAbejas.add(uno, BorderLayout.NORTH);
+			panelAbejas.add(tres, BorderLayout.SOUTH);
 			
-			panelAbejas.setBackground(Color.yellow);
+			Color amarillo = new Color(254,246,98);
+			panelAbejas.setBackground(amarillo);
 			
 			this.panel = panelAbejas;
-			return (panelAbejas);
+			return panelAbejas;
 			
 		}
 		
